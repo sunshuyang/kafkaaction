@@ -82,6 +82,7 @@ public class QuotationProducer {
             for (int i = 0; i < MSG_SIZE; i++) {
                 quotationInfo = createQuotationInfo();
                 //消息对象
+                //默认分区策略，同一支股票发送到同一个分区下
                 record = new ProducerRecord<String, String>(TOPIC,null,quotationInfo.getTradeTime(),
                         quotationInfo.getStockCode(),quotationInfo.toString());
                 //发送消息时指定一个偏Callback，实现onCompletion()方法，在成功发送后获取消息偏移量和分区
