@@ -6,16 +6,40 @@
 
     <groupId>com.ny</groupId>
     <artifactId>kafkaaction</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <build>
         <plugins>
+            <!--序列化插件-->
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>1.8.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>
+                                ${project.basedir}/src/main/resource/
+                            </sourceDirectory>
+                            <outputDirectory>
+                                ${project.basedir}/src/main/java/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <encoding>utf8</encoding>
                 </configuration>
+                <version>3.2</version>
             </plugin>
         </plugins>
     </build>
@@ -31,21 +55,10 @@
             <version>0.10.1.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_clients</artifactId>
-            <version>0.10.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>0.10.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>0.10.1.1</version>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.1</version>
         </dependency>
     </dependencies>
-
 
 </project>

@@ -1,6 +1,5 @@
-package kafka.consumer;
+package com.kafka.consumer;
 
-import javafx.beans.binding.ObjectExpression;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;

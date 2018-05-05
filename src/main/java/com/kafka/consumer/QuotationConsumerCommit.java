@@ -1,5 +1,4 @@
-package kafka.consumer;
-
+package com.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;

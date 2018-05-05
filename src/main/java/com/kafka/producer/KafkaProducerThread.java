@@ -1,6 +1,6 @@
-package kafka.producer;
+package com.kafka.producer;
 
-import entity.StockQuotationInfo;
+import com.kafka.entity.StockQuotationInfo;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -9,27 +9,31 @@ import org.apache.log4j.Logger;
 import java.text.DecimalFormat;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
- * 单线程生产者
+ * 多线程生产者
  */
 
-public class QuotationProducer {
+public class KafkaProducerThread implements Runnable {
     private static final Logger LOG = Logger.getLogger(QuotationProducer.class);
     //设置实例生产消息的总数
     private static final int MSG_SIZE = 100;
+    //线程数
+    private static final int THREADS_NUMS = 10;
     //主题名称
     private static final String TOPIC = "stock-quotation";
     //kafka集群
     private static final String BROKER_LIST = "server-1:9092,server-2:9092,server-3:9092";
-    private static KafkaProducer<String,String> producer = null;
+    private KafkaProducer<String,String> producer = null;
+    private ProducerRecord<String,String> record = null;
 
-    static{
-        //1.构造用于实例化KafkaProducer的Properties信息
-        Properties configs = initConfig();
-        //2.初始化一个KafkaProducer
-        producer = new KafkaProducer<String, String>(configs);
+
+    public KafkaProducerThread(KafkaProducer<String,String> producer,ProducerRecord<String,String> record){
+        this.producer = producer;
+        this.record = record;
     }
 
     /**
@@ -71,34 +75,38 @@ public class QuotationProducer {
         quotationInfo.setTradeTime(System.currentTimeMillis());
         quotationInfo.setStockName("股票-"+stockCode);
         return quotationInfo;
+    }
 
+
+
+    public void run() {
+        producer.send(record, new Callback() {
+            public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+                if(null != e){
+                    LOG.error("Send message occurs exception.",e);
+                }
+                if(null != recordMetadata){
+                    LOG.info(String.format("offset:%s,partition:%s",recordMetadata.offset(),recordMetadata.partition()));
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {
         ProducerRecord<String,String> record = null;
         StockQuotationInfo quotationInfo = null;
+        Properties configs = initConfig();
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(configs);
+        ExecutorService executor = Executors.newFixedThreadPool(THREADS_NUMS) ;
         try{
-            int num = 0;
             for (int i = 0; i < MSG_SIZE; i++) {
                 quotationInfo = createQuotationInfo();
                 //消息对象
-                //默认分区策略，同一支股票发送到同一个分区下
-                record = new ProducerRecord<String, String>(TOPIC,null,quotationInfo.getTradeTime(),
-                        quotationInfo.getStockCode(),quotationInfo.toString());
+                record = new ProducerRecord<String, String>(TOPIC,null,
+                        quotationInfo.getTradeTime(),
+                        quotationInfo.getStockCode(), quotationInfo.toString());
                 //发送消息时指定一个偏Callback，实现onCompletion()方法，在成功发送后获取消息偏移量和分区
-                producer.send(record, new Callback() {
-                    public void onCompletion(RecordMetadata metaData, Exception e) {
-                        if(null != e){
-                            LOG.error("Send message occurs exception.",e);
-                        }
-                        if(null != metaData){
-                            LOG.info(String.format("offset:%s,partition:%s",metaData.offset(),metaData.partition()));
-                        }
-                    }
-                });//异步发送消息
-                if (num++ % 10 ==0){
-                    Thread.sleep(2000L);//休眠2s
-                }
+                executor.submit(new KafkaProducerThread(producer,record));
             }
         } catch (Exception e){
             LOG.error("Send Message occurs exception",e);
@@ -107,4 +115,5 @@ public class QuotationProducer {
         }
 
     }
+
 }

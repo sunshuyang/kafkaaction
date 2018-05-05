@@ -1,4 +1,4 @@
-package kafka.consumer;
+package com.kafka.consumer;
 
 import com.sun.deploy.util.StringUtils;
 import kafka.api.FetchRequest;
@@ -10,9 +10,7 @@ import kafka.javaapi.*;
 import kafka.javaapi.consumer.SimpleConsumer;
 
 import kafka.message.MessageAndOffset;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.log4j.Logger;
-import org.jboss.netty.util.internal.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;

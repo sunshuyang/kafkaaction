@@ -1,4 +1,4 @@
-package kafka.consumer;
+package com.kafka.consumer;
 
 import java.util.HashMap;
 import java.util.Map;

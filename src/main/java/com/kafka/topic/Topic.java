@@ -1,4 +1,4 @@
-package kafka.topic;
+package com.kafka.topic;
 
 import kafka.admin.AdminUtils;
 import kafka.admin.BrokerMetadata;

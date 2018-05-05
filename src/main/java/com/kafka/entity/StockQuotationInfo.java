@@ -1,4 +1,4 @@
-package entity;
+package com.kafka.entity;
 
 import java.io.Serializable;
 
