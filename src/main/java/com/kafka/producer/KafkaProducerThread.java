@@ -37,24 +37,10 @@ public class KafkaProducerThread implements Runnable {
     }
 
     /**
-     * 1.初始化Kafka配置
-     * @return
-     */
-    private static Properties initConfig(){
-        Properties properties = new Properties();
-        //Kafka broker列表
-        properties.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,BROKER_LIST);
-        //设置序列化
-        properties.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
-        return properties;
-    }
-
-    /**
      * 生产股票行情信息
      * @return
      */
-    private static StockQuotationInfo createQuotationInfo(){
+    static StockQuotationInfo createQuotationInfo(){
         StockQuotationInfo quotationInfo = new StockQuotationInfo();
         //随机产生1到10之间的整数，然后与600100想加组成股票代码
         Random r = new Random();
@@ -80,13 +66,17 @@ public class KafkaProducerThread implements Runnable {
 
 
     public void run() {
+        sendMsgFunc(producer, record, LOG);
+    }
+
+    static void sendMsgFunc(KafkaProducer<String, String> producer, ProducerRecord<String, String> record, final Logger log) {
         producer.send(record, new Callback() {
             public void onCompletion(RecordMetadata recordMetadata, Exception e) {
                 if(null != e){
-                    LOG.error("Send message occurs exception.",e);
+                    log.error("Send message occurs exception.",e);
                 }
                 if(null != recordMetadata){
-                    LOG.info(String.format("offset:%s,partition:%s",recordMetadata.offset(),recordMetadata.partition()));
+                    log.info(String.format("offset:%s,partition:%s",recordMetadata.offset(),recordMetadata.partition()));
                 }
             }
         });
@@ -95,7 +85,7 @@ public class KafkaProducerThread implements Runnable {
     public static void main(String[] args) {
         ProducerRecord<String,String> record = null;
         StockQuotationInfo quotationInfo = null;
-        Properties configs = initConfig();
+        Properties configs = QuotationProducer.initConfig();
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(configs);
         ExecutorService executor = Executors.newFixedThreadPool(THREADS_NUMS) ;
         try{

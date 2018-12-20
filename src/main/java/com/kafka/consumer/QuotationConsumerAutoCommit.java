@@ -21,7 +21,7 @@ public class QuotationConsumerAutoCommit {
      *
      * @return
      */
-    private static Properties initConfig() {
+    protected static Properties initConfig() {
         Properties properties = new Properties();
         Map<String, Object> config = new HashMap<String, Object>();
         //Kafka broker列表

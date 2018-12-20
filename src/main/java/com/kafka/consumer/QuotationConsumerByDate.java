@@ -20,28 +20,8 @@ public class QuotationConsumerByDate {
 
     private static final String TOPIC_NAME = "stock-quotation";
 
-    /**
-     * 1.初始化consumer配置
-     *
-     * @return
-     */
-    private static Properties initConfig() {
-        Properties properties = new Properties();
-        Map<String, Object> config = new HashMap<String, Object>();
-        //Kafka broker列表
-        config.put("bootstrap.servers", "localhost:9092");
-        config.put("group.id", "test");
-        config.put("client.id", "test");
-        config.put("enable.auto.commit", true);//显示设置偏移量自动提交
-        config.put("auto.commit.interval.ms", 1000);//设置偏移量提交时间间隔
-        config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.putAll(config);
-        return properties;
-    }
-
     public static void main(String[] args) {
-        KafkaConsumer<String,String> consumer = new KafkaConsumer<>(initConfig());
+        KafkaConsumer<String,String> consumer = new KafkaConsumer<>(QuotationConsumerAutoCommit.initConfig());
         try {
             Map<TopicPartition,Long> timestampsToSearch = new HashMap<>();
 
