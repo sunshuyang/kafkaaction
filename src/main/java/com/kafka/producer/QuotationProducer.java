@@ -1,6 +1,5 @@
 package com.kafka.producer;
 
-import com.kafka.automatic.StockPartitionor;
 import com.kafka.entity.StockQuotationInfo;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.clients.producer.ProducerConfig;
